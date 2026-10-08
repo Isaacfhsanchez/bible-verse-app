@@ -9,6 +9,7 @@ import {
   Button,
   TouchableOpacity
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   const [books, setBooks] = useState([]);
@@ -17,8 +18,20 @@ export default function App() {
   const [verses, setVerses] = useState([]);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [notes, setNotes] = useState({});
 
   useEffect(() => {
+    const loadStoredState = async () => {
+      const savedFavorites = await AsyncStorage.getItem("bible-favorites");
+      const savedNotes = await AsyncStorage.getItem("bible-notes");
+
+      if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+      if (savedNotes) setNotes(JSON.parse(savedNotes));
+    };
+
+    loadStoredState();
+
     fetch("http://localhost:4000/api/books")
       .then((res) => res.json())
       .then((data) => {
@@ -29,6 +42,14 @@ export default function App() {
       })
       .catch((err) => console.error(err));
   }, []);
+
+  useEffect(() => {
+    AsyncStorage.setItem("bible-favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
+    AsyncStorage.setItem("bible-notes", JSON.stringify(notes));
+  }, [notes]);
 
   useEffect(() => {
     if (!selectedBookId) return;
@@ -50,6 +71,16 @@ export default function App() {
     const res = await fetch(`http://localhost:4000/api/search?q=${encodeURIComponent(value)}`);
     const data = await res.json();
     setResults(data);
+  };
+
+  const toggleFavorite = (refKey) => {
+    setFavorites((prev) =>
+      prev.includes(refKey) ? prev.filter((item) => item !== refKey) : [...prev, refKey]
+    );
+  };
+
+  const updateNote = (refKey, value) => {
+    setNotes((prev) => ({ ...prev, [refKey]: value }));
   };
 
   const currentBook = books.find((book) => book.id === selectedBookId) || books[0];
@@ -125,13 +156,29 @@ export default function App() {
       </View>
 
       <ScrollView style={styles.list}>
-        {(verses || []).map((verse) => (
-          <View key={verse.number} style={styles.card}>
-            <Text style={styles.book}>{currentBook?.name} {selectedChapter}:{verse.number}</Text>
-            <Text style={styles.text}>{verse.text}</Text>
-            <Button title="Save" onPress={() => {}} />
-          </View>
-        ))}
+        {(verses || []).map((verse) => {
+          const refKey = `${selectedBookId}-${selectedChapter}-${verse.number}`;
+          const saved = favorites.includes(refKey);
+
+          return (
+            <View key={verse.number} style={styles.card}>
+              <View style={styles.headerRow}>
+                <Text style={styles.book}>{currentBook?.name} {selectedChapter}:{verse.number}</Text>
+                <Button title={saved ? "★ Saved" : "☆ Save"} onPress={() => toggleFavorite(refKey)} />
+              </View>
+
+              <Text style={styles.text}>{verse.text}</Text>
+
+              <TextInput
+                style={styles.noteInput}
+                value={notes[refKey] || ""}
+                placeholder="Write your reflection..."
+                onChangeText={(value) => updateNote(refKey, value)}
+                multiline
+              />
+            </View>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );
@@ -211,6 +258,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#dfe7fb"
   },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8
+  },
   book: {
     fontWeight: "700",
     marginBottom: 8
@@ -219,5 +272,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 10
+  },
+  noteInput: {
+    borderWidth: 1,
+    borderColor: "#dfe7fb",
+    borderRadius: 10,
+    backgroundColor: "#f8faff",
+    padding: 10,
+    minHeight: 62,
+    textAlignVertical: "top"
   }
 });

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const API_URL = "http://localhost:4000/api";
 
@@ -28,6 +28,11 @@ export default function App() {
       .then((res) => res.json())
       .then((data) => {
         setBooks(data);
+        const firstBook = data[0];
+        if (firstBook) {
+          setSelectedBookId(firstBook.id);
+          setSelectedChapter(firstBook.chapters[0].chapter);
+        }
       })
       .catch((error) => console.error("Failed to load books:", error));
 
@@ -50,16 +55,9 @@ export default function App() {
   }, [darkMode]);
 
   const selectedBook = books.find((book) => book.id === selectedBookId) || books[0];
-
   const availableChapters = selectedBook?.chapters || [];
   const chapterEntry = availableChapters.find((entry) => Number(entry.chapter) === Number(selectedChapter)) || availableChapters[0];
   const chapterVerses = chapterEntry?.verses || [];
-
-  useEffect(() => {
-    if (!selectedBook) return;
-    const chapterNumber = chapterEntry?.chapter || 1;
-    setSelectedChapter(chapterNumber);
-  }, [selectedBookId]);
 
   const handleSearch = async (value) => {
     setQuery(value);
@@ -136,7 +134,7 @@ export default function App() {
             <h2>Search</h2>
             <input
               type="text"
-              placeholder="Search by word or book..."
+              placeholder="Search by book or keyword..."
               value={query}
               onChange={(e) => handleSearch(e.target.value)}
             />
