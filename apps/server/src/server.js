@@ -1,12 +1,16 @@
 import express from "express";
 import cors from "cors";
-import { books, devotionals } from "./data/bible.js";
+import { books, devotionals, verseOfTheDay } from "./data/bible.js";
 
 const app = express();
 const PORT = 4000;
 
 app.use(cors());
 app.use(express.json());
+
+const readHistory = [];
+const favorites = [];
+const userNotes = {};
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, message: "Bible API is running" });
@@ -30,7 +34,11 @@ app.get("/api/books/:id/:chapter", (req, res) => {
     return res.status(404).json({ error: "Chapter not found" });
   }
 
-  res.json({ book: book.name, chapter: selectedChapter.chapter, verses: selectedChapter.verses });
+  res.json({
+    book: book.name,
+    chapter: selectedChapter.chapter,
+    verses: selectedChapter.verses
+  });
 });
 
 app.get("/api/search", (req, res) => {
@@ -67,6 +75,52 @@ app.get("/api/search", (req, res) => {
 
 app.get("/api/devotionals", (_req, res) => {
   res.json(devotionals);
+});
+
+app.get("/api/verse-of-day", (_req, res) => {
+  res.json(verseOfTheDay);
+});
+
+app.post("/api/read-history", (req, res) => {
+  const entry = req.body;
+
+  if (!entry || !entry.book || !entry.chapter || !entry.verse) {
+    return res.status(400).json({ error: "Invalid read history payload" });
+  }
+
+  readHistory.unshift({ ...entry, timestamp: new Date().toISOString() });
+  res.json(readHistory.slice(0, 10));
+});
+
+app.get("/api/read-history", (_req, res) => {
+  res.json(readHistory.slice(0, 10));
+});
+
+app.post("/api/favorites", (req, res) => {
+  const item = req.body;
+  if (!item?.refKey) return res.status(400).json({ error: "Missing refKey" });
+
+  if (!favorites.includes(item.refKey)) {
+    favorites.push(item.refKey);
+  }
+
+  res.json(favorites);
+});
+
+app.get("/api/favorites", (_req, res) => {
+  res.json(favorites);
+});
+
+app.post("/api/notes", (req, res) => {
+  const { key, value } = req.body;
+  if (!key) return res.status(400).json({ error: "Missing note key" });
+
+  userNotes[key] = value;
+  res.json(userNotes);
+});
+
+app.get("/api/notes", (_req, res) => {
+  res.json(userNotes);
 });
 
 app.listen(PORT, () => {

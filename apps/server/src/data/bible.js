@@ -28,7 +28,7 @@ export const books = [
         chapter: 3,
         verses: [
           { number: 1, text: "Now the serpent was more crafty than any other beast of the field that the Lord God had made." },
-          { number: 2, text: "He said to the woman, 'Did God actually say, "You shall not eat of any tree in the garden"?'" },
+          { number: 2, text: "He said to the woman, 'Did God actually say, \"You shall not eat of any tree in the garden\"?'" },
           { number: 3, text: "And the woman said to the serpent, 'We may eat of the fruit of the trees of the garden.'" },
           { number: 4, text: "But the serpent said to the woman, 'You will not surely die.'" },
           { number: 5, text: "For God knows that when you eat of it your eyes will be opened, and you will be like God, knowing good and evil." }
@@ -161,3 +161,10 @@ export const devotionals = [
     text: "God is still writing your story one faithful day at a time."
   }
 ];
+
+export const verseOfTheDay = {
+  book: "Psalms",
+  chapter: 23,
+  verse: 1,
+  text: "The Lord is my shepherd; I shall not want."
+};
