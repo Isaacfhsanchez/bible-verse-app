@@ -1,22 +1,33 @@
 :root {
-  --bg: #f5f7fb;
+  --bg: #edf2ff;
   --panel: #ffffff;
-  --text: #1a1a1a;
-  --muted: #5f6472;
-  --accent: #3d7cff;
-  --border: #e2e8f0;
-  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --panel-alt: #f8faff;
+  --text: #18212f;
+  --muted: #546179;
+  --accent: #3f6ef5;
+  --accent-alt: #628cff;
+  --border: #dfe7fb;
+  --shadow: 0 12px 30px rgba(25, 40, 74, 0.08);
 }
 
 * {
   box-sizing: border-box;
 }
 
-body {
+html, body, #root {
   margin: 0;
+  min-height: 100%;
   font-family: Inter, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
 }
 
 .app {
@@ -26,82 +37,203 @@ body {
 }
 
 .app.dark {
-  --bg: #111827;
-  --panel: #1f2937;
-  --text: #f9fafb;
-  --muted: #cbd5e1;
-  --accent: #8ab4ff;
-  --border: #374151;
-  --shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --bg: #0b1220;
+  --panel: #111b2d;
+  --panel-alt: #18243a;
+  --text: #edf4ff;
+  --muted: #afbdd3;
+  --accent: #7aa3ff;
+  --accent-alt: #9dbdff;
+  --border: #223249;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 32px;
+  padding: 22px 32px;
   background: var(--panel);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow);
 }
 
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1, h2, p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(2rem, 3vw, 2.6rem);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-actions select,
+.chapter-selects select,
+input,
+textarea {
+  background: var(--panel-alt);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.header-actions button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--accent);
+  color: white;
+}
+
 .layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 300px 1fr;
   gap: 24px;
   padding: 24px;
 }
 
-.sidebar, .content {
+.sidebar,
+.reader-panel {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.sidebar > section,
-.content > section,
-.passage {
+.panel {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 18px;
   box-shadow: var(--shadow);
+  padding: 20px;
 }
 
-input, textarea, button {
-  font: inherit;
+.book-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
 }
 
-input, textarea {
-  width: 100%;
-  background: transparent;
+.book-pill {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 14px;
+  background: transparent;
   color: var(--text);
+  border-radius: 999px;
+  padding: 8px 12px;
 }
 
-button {
+.book-pill.active {
   background: var(--accent);
   color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 12px;
-  cursor: pointer;
+  border-color: transparent;
 }
 
-.passage-header {
+.devotional-item {
+  border: 1px solid var(--border);
+  background: var(--panel-alt);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.devotional-item p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.chapter-toolbar {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
   align-items: center;
-  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.chapter-selects {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.chapter-selects label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.chapter-card {
+  padding: 28px;
+}
+
+.chapter-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.verse-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.verse-item {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel-alt);
+}
+
+.verse-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.verse-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+}
+
+.save-button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 10px;
 }
 
 .verse-text {
   font-size: 1.08rem;
   line-height: 1.8;
-  margin: 10px 0 18px;
+  margin-bottom: 14px;
 }
 
 .note-box {
@@ -110,15 +242,24 @@ button {
   gap: 8px;
 }
 
-.card {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
-  margin-top: 12px;
+.note-box label {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
 }
 
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 }
